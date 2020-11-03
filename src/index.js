@@ -5,8 +5,11 @@ const exphbs = require('express-handlebars');
 const app = express();
 const http = require('http');
 const route = require('./routes');
+const db = require('./config/db');
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(path.join(__dirname, 'public')));
+//Connect DB
+db.connect();
 //Http logger
 app.use(morgan('combined'));
 //Template engine
@@ -17,7 +20,7 @@ app.engine(
     }),
 );
 app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, 'resources/views'));
+app.set('views', path.join(__dirname, 'resources', 'views'));
 //Routes init
 route(app);
 http.createServer(app).listen(app.get('port'), function () {
