@@ -5,9 +5,14 @@ const exphbs = require('express-handlebars');
 const app = express();
 const http = require('http');
 const route = require('./routes');
+const methodOverride = require('method-override');
 const db = require('./config/db');
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(path.join(__dirname, 'public')));
+//Middleware
+app.use(express.urlencoded());
+app.use(express.json());
+app.use(methodOverride('_method'));
 //Connect DB
 db.connect();
 //Http logger
@@ -17,6 +22,9 @@ app.engine(
     'hbs',
     exphbs({
         extname: '.hbs',
+        helpers: {
+            sum: (a, b) => a + b,
+        },
     }),
 );
 app.set('view engine', 'hbs');
