@@ -1,17 +1,28 @@
-const Course = require('../models/Course');
+const Course = require("../models/Course");
+
 const {
-    mongooseToObject,
-    mutipleMongooseToObject,
-} = require('../../util/mongoose');
+  mongooseToObject,
+  mutipleMongooseToObject,
+} = require("../../util/mongoose");
 class meController {
     storedCourses(req, res, next) {
-        Course.find({})
-            .then((courses) => {
-                res.render('me/storedCourses', {
-                    courses: mutipleMongooseToObject(courses),
-                });
+        Promise.all([Course.find({}), Course.countDocumentsDeleted()])
+          .then(([courses, deletedCount]) =>
+            res.render("me/storedCourses", {
+              deletedCount,
+              courses: mutipleMongooseToObject(courses),
             })
-            .catch(next);
-    }
+          )
+          .catch(next);
+      }
+  trashCourses(req, res, next) {
+    Course.findDeleted({})
+      .then((courses) => {
+        res.render("me/trashCourses", {
+          courses: mutipleMongooseToObject(courses),
+        });
+      })
+      .catch(next);
+  }
 }
 module.exports = new meController();
